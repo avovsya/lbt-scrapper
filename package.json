@@ -1,0 +1,14 @@
+{
+  "name": "lbt-project",
+  "version": "0.0.1",
+  "main": "start.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Artem Vovsia <avovsya@gmai.com>",
+  "dependencies": {
+    "request": "^2.58.0",
+    "x-ray": "^2.0.1",
+    "zmq": "^2.11.1"
+  }
+}

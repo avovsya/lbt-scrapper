@@ -1,0 +1,32 @@
+{
+    "www.very.co.uk": {
+        "nextPage": ".pagination .paginationNext@href",
+        "productCard": "#products .productList .product",
+        "product": {
+            "id": "@id",
+            "images": {
+                "main": ".productMainImage img@src"
+            },
+            "url": ".productTitle@href",
+            "price": ".productPrice dd",
+            "synopsis": ".productTitle h3 span",
+            "description": ".productDescription",
+            "colours": [".productColours img@title"],
+            "availability": ".available"
+        }
+    },
+    "www.boden.co.uk": {
+        "productCard": ".productList .product-item",
+        "nextPage": "",
+        "product": {
+            "id": "@id",
+            "images": {
+                "main": ".image img@src"
+            },
+            "url": "a.title.url@href",
+            "price": ".NowPrice",
+            "synopsis": "a.title.url",
+            "colours": [".thumbnailSwatch li a@title"]
+        }
+    }
+}
