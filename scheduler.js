@@ -5,10 +5,11 @@ var endpoint = process.env.SCHEDULER_ENDPOINT || 'tcp://127.0.0.1:5554';
 
 socket.bindSync(endpoint);
 
+// On start: send to downloader all retailer sites from config.json
 var config = require('./config.json');
-config.sites.forEach(function (site) {
-  console.log("Sending site: ", site);
-  socket.send(JSON.stringify(site));
-});
-// read file with the list of sites to download
-// push list into queue
+config.sites.forEach(sendMessage);
+
+function sendMessage(message) {
+  console.log("Sending site: ", message);
+  socket.send(JSON.stringify(message));
+}

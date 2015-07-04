@@ -7,6 +7,7 @@
   },
   "author": "Artem Vovsia <avovsya@gmai.com>",
   "dependencies": {
+    "lodash": "^3.10.0",
     "request": "^2.58.0",
     "x-ray": "^2.0.1",
     "zmq": "^2.11.1"

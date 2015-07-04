@@ -1,23 +1,24 @@
 var zmq = require('zmq');
 var socket = zmq.createSocket('pull');
 var fs = require('fs');
+var _ = require('lodash');
 var Xray = require('x-ray');
 var xray = Xray();
 
-var endpoint = process.env.SCHEDULER_ENDPOINT || 'tcp://127.0.0.1:5555';
+var endpoint = process.env.DOWNLOADER_ENDPOINT || 'tcp://127.0.0.1:5555';
 
 socket.connect(endpoint);
 console.log('Parser connected to: ' + endpoint);
 
 socket.on('message', function (msg) {
-  var parsedMessage = JSON.parse(msg); // TODO: handle parse error
+  var parsedMessage = _parseJson(msg);
   console.log('Message received: ', parsedMessage);
 
-  fs.readFile(parsedMessage.fileName, function (err, file) {
+  fs.readFile(parsedMessage.fileName, { encoding: 'utf8' }, function (err, file) {
     if (err) {
-      return console.error('Error reading file: ', parsedMessage);
+      return console.error('Error reading file: ', parsedMessage, err);
     }
-    return parse(parsedMessage, file.toString('utf8'), function (err, result) {
+    parse(parsedMessage, file, function (err, result) {
       if (err) {
         return console.error('Error parsing document: ', err);
       }
@@ -30,34 +31,55 @@ function parse(message, file, callback) {
   var rule = require('./rules.json')[message.name];
 
   xray(file, {
-    nextPage: rule.nextPage,
     products: xray(rule.productCard, [rule.product])
   })(callback);
-};
+}
 
 function saveProducts(message, retailerInfo) {
-  console.log('RESULT: ', retailerInfo);
-  var currentProducts = getListOfProducts(message.name) || [];
-  var numberOfNewProducts = retailerInfo.products.lengths;
-  retailerInfo.products = retailerInfo.products.map(function(newProduct) {
-  });
-  // Save phase.
-  // Get list of products that already save for this site
-  // Compare this list with new products.
-  // Save all new products
-  // If all new products are seen for the first time, then there is
-  // a chance that we have more products on a "next page" of the site. Push url to next page to the Downloader
-};
+  var productData = getProductDataJson();
+  var currentProducts = productData[message.name] || [];
 
-function getProductJson(siteName) {
+  // Leave only those products that we haven't seen yet.
+  retailerInfo.products = productDifference(retailerInfo.products, currentProducts);
+
+  // TODO. If whole page of products new for us, then we can have some new
+  // products on the next page. Handle this.
+
+  // Overwriting list of new products for a retailer
+  productData[message.name] = retailerInfo.products;
+
+  saveProductDataJson(productData);
+}
+
+function getProductDataJson() {
+  console.log('Getting product data');
   var file = fs.readFileSync('./productData.json', { encoding: "utf8" });
-  return JSON.parse(file);
+  return _parseJson(file);
 }
 
-function getListOfProducts(siteName) {
-  return getProductJson(siteName)[siteName];
+function saveProductDataJson(productData) {
+  console.log('Saving product data');
+  fs.writeFile('./productData.json', JSON.stringify(productData), function (err) {
+    if (err) {
+      return console.error('Error saving productData.json: ', err);
+    }
+    return console.log('Product data saved successfully!');
+  });
 }
 
+function productDifference(newProducts, oldProducts) {
+  return _.filter(newProducts, function (product) {
+    return !_.find(oldProducts, 'id', product.id);
+  });
+}
 
-
-
+function _parseJson(json) {
+  var result;
+  try {
+    result = JSON.parse(json);
+  } catch (e) {
+    console.error('Error parsing JSON: ', json);
+    process.exit(1);
+  }
+  return result;
+}

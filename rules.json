@@ -1,6 +1,5 @@
 {
     "www.very.co.uk": {
-        "nextPage": ".pagination .paginationNext@href",
         "productCard": "#products .productList .product",
         "product": {
             "id": "@id",
@@ -17,7 +16,6 @@
     },
     "www.boden.co.uk": {
         "productCard": ".productList .product-item",
-        "nextPage": "",
         "product": {
             "id": "@id",
             "images": {
