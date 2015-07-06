@@ -5,7 +5,7 @@ var request = require('request');
 var fs = require('fs');
 
 var endpoint = process.env.SCHEDULER_ENDPOINT || 'tcp://127.0.0.1:5554';
-var resultEndpoint = process.env.SCHEDULER_ENDPOINT || 'tcp://127.0.0.1:5555';
+var resultEndpoint = process.env.DOWNLOADER_ENDPOINT || 'tcp://127.0.0.1:5555';
 
 console.log('Starting donwloader...');
 
