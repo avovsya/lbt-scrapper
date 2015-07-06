@@ -13,3 +13,5 @@ Run all services separately:
   `node downloader.js`
   
   `node scheduler.js`
+
+Or just run: `./run.sh`
